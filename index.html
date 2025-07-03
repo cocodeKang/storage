@@ -3,19 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <title>영상 보기</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { margin-bottom: 1rem; }
+    .video-item { margin-bottom: 2rem; }
+    .video-item h2 { margin-bottom: 0.5rem; }
+  </style>
 </head>
 <body>
   <h1>🎬 업로드된 영상들</h1>
+  <div id="video-list"></div>
 
-  <h2>금색</h2>
-  <video width="640" controls>
-    <source src="금색.mp4" type="video/mp4">
-  </video>
+  <script>
+    // 새 영상을 추가하려면 이 배열에 { title: "...", src: "파일명.mp4" } 객체를 추가하세요.
+    const videos = [
+      { title: "금색",    src: "금색.mp4" },
+      { title: "축박하다", src: "축박하다.mp4" }
+      { title: "가끔", src: "가끔.mp4" }  
+      // 예: { title: "새로운제목", src: "새로운파일.mp4" },
+    ];
 
-  <h2>축박하다</h2>
-  <video width="640" controls>
-    <source src="축박하다.mp4" type="video/mp4">
-  </video>
+    const container = document.getElementById("video-list");
 
+    videos.forEach(video => {
+      // wrapper 요소 생성
+      const item = document.createElement("div");
+      item.className = "video-item";
+
+      // 제목
+      const heading = document.createElement("h2");
+      heading.textContent = video.title;
+      item.appendChild(heading);
+
+      // 비디오 엘리먼트
+      const vid = document.createElement("video");
+      vid.width = 640;
+      vid.controls = true;
+
+      const source = document.createElement("source");
+      source.src = video.src;
+      source.type = "video/mp4";
+
+      vid.appendChild(source);
+      item.appendChild(vid);
+
+      // 컨테이너에 추가
+      container.appendChild(item);
+    });
+  </script>
 </body>
 </html>
