@@ -22,7 +22,8 @@
 <body>
   <h1>🎬 업로드된 영상 학습</h1>
   <div id="video-container">
-    <video id="player" controls autoplay></video>
+    <!-- muted 추가 -->
+    <video id="player" controls autoplay muted></video>
     <div class="controls">
       <button id="prevBtn">◀️ 이전</button>
       <button id="toggleAnswerBtn">정답보기</button>
@@ -35,7 +36,9 @@
   </div>
 
   <script>
-    // 업로드하신 영상 파일만 추가
+    // -----------------------------------
+    // 1) files 배열 문법 오류 수정
+    // -----------------------------------
     const files = [
       "가끔.mp4",
       "금색.mp4",
@@ -46,18 +49,10 @@
       "제생원.mp4",
       "청인.mp4",
       "촉박하다.mp4"
-      ".mp4"
-      ".mp4"
-      ".mp4"
-      
-      
-    
     ];
 
-    // 확장자 제거해 단어로 사용
     const items = files.map(f => {
-      const word = f.replace(/\.[^.]+$/, "");
-      return { filename: f, word };
+      return { filename: f, word: f.replace(/\.[^.]+$/, "") };
     });
 
     // Fisher–Yates 셔플
@@ -70,9 +65,7 @@
       return a;
     }
 
-    let shuffled = shuffle(items);
-    let idx = 0;
-
+    let shuffled, idx = 0;
     const player = document.getElementById("player");
     const answerEl = document.getElementById("answer");
     const counterEl = document.getElementById("counter");
@@ -85,29 +78,31 @@
       answerEl.style.display = "none";
       answerEl.textContent = word;
       player.src = filename;
+      // 자동재생 강제 호출
+      player.play().catch(()=>{/* 자동재생 차단된 경우 무시 */});
       counterEl.textContent = `${idx + 1} / ${shuffled.length}`;
       prevBtn.disabled = idx === 0;
       nextBtn.disabled = idx === shuffled.length - 1;
     }
 
     prevBtn.addEventListener("click", () => {
-      if (idx > 0) {
-        idx--;
-        loadVideo();
-      }
+      if (idx > 0) { idx--; loadVideo(); }
     });
     nextBtn.addEventListener("click", () => {
-      if (idx < shuffled.length - 1) {
-        idx++;
-        loadVideo();
-      }
+      if (idx < shuffled.length - 1) { idx++; loadVideo(); }
     });
     toggleAnswerBtn.addEventListener("click", () => {
       answerEl.style.display = answerEl.style.display === "none" ? "block" : "none";
     });
 
-    // 페이지 로드 시 첫 영상 로드
-    window.addEventListener("load", loadVideo);
+    // -----------------------------------
+    // 2) DOMContentLoaded에서 셔플 + 첫 로드
+    // -----------------------------------
+    window.addEventListener("DOMContentLoaded", () => {
+      shuffled = shuffle(items);
+      idx = 0;
+      loadVideo();
+    });
   </script>
 </body>
 </html>
