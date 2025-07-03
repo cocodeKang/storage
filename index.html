@@ -35,15 +35,20 @@
   </div>
 
   <script>
-    // 1) 여기에 파일명 배열에 추가하세요
+    // 업로드하신 영상 파일만 추가
     const files = [
+      "가끔.mp4",
       "금색.mp4",
-      "촉박하다.mp4",
-      "가끔.mp4"
-      // ,"새로운파일.mp4"
+      "부럽다.mp4",
+      "속이 터지다.mp4",
+      "없다 (1).mp4",
+      "정신이 나가다.mp4",
+      "제생원.mp4",
+      "청인.mp4",
+      "촉박하다.mp4"
     ];
 
-    // 확장자 제거해 단어로 쓰기
+    // 확장자 제거해 단어로 사용
     const items = files.map(f => {
       const word = f.replace(/\.[^.]+$/, "");
       return { filename: f, word };
@@ -95,7 +100,7 @@
       answerEl.style.display = answerEl.style.display === "none" ? "block" : "none";
     });
 
-    // 페이지 로드 시 첫 영상
+    // 페이지 로드 시 첫 영상 로드
     window.addEventListener("load", loadVideo);
   </script>
 </body>
