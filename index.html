@@ -2,56 +2,101 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>영상 보기</title>
+  <title>영상 학습 사이트</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    h1 { margin-bottom: 1rem; }
-    .video-item { margin-bottom: 2rem; }
-    .video-item h2 { margin-bottom: 0.5rem; }
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    h1 { text-align: center; margin-bottom: 2rem; }
+    #video-container { text-align: center; }
+    video { width: 100%; max-width: 720px; border-radius: 8px; background: #222; }
+    .controls { display: flex; justify-content: space-between; margin: 1rem 0; }
+    button { padding: .5rem 1rem; font-size: 1rem; }
+    #answer { 
+      margin-top: 1rem; 
+      font-size: 1.5rem; 
+      color: #0ea5e9; 
+      font-weight: bold; 
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1>🎬 업로드된 영상들</h1>
-  <div id="video-list"></div>
+  <h1>🎬 업로드된 영상 학습</h1>
+  <div id="video-container">
+    <video id="player" controls autoplay></video>
+    <div class="controls">
+      <button id="prevBtn">◀️ 이전</button>
+      <button id="toggleAnswerBtn">정답보기</button>
+      <button id="nextBtn">다음 ▶️</button>
+    </div>
+    <div id="answer"></div>
+    <div style="text-align:center; margin-top:.5rem;">
+      <span id="counter"></span>
+    </div>
+  </div>
 
   <script>
-    // 여기에 파일명만 추가하세요.
+    // 1) 여기에 파일명 배열에 추가하세요
     const files = [
       "금색.mp4",
-      "축박하다.mp4"
+      "촉박하다.mp4",
       "가끔.mp4"
-      // 예: "새로운파일.mp4",
+      // ,"새로운파일.mp4"
     ];
 
-    const container = document.getElementById("video-list");
-
-    files.forEach(filename => {
-      // 확장자 제거해서 제목으로 사용
-      const title = filename.replace(/\.[^/.]+$/, "");
-
-      // wrapper
-      const item = document.createElement("div");
-      item.className = "video-item";
-
-      // 제목
-      const heading = document.createElement("h2");
-      heading.textContent = title;
-      item.appendChild(heading);
-
-      // video
-      const vid = document.createElement("video");
-      vid.width = 640;
-      vid.controls = true;
-
-      const source = document.createElement("source");
-      source.src = filename;
-      source.type = "video/mp4";
-
-      vid.appendChild(source);
-      item.appendChild(vid);
-
-      container.appendChild(item);
+    // 확장자 제거해 단어로 쓰기
+    const items = files.map(f => {
+      const word = f.replace(/\.[^.]+$/, "");
+      return { filename: f, word };
     });
+
+    // Fisher–Yates 셔플
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let shuffled = shuffle(items);
+    let idx = 0;
+
+    const player = document.getElementById("player");
+    const answerEl = document.getElementById("answer");
+    const counterEl = document.getElementById("counter");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const toggleAnswerBtn = document.getElementById("toggleAnswerBtn");
+
+    function loadVideo() {
+      const { filename, word } = shuffled[idx];
+      answerEl.style.display = "none";
+      answerEl.textContent = word;
+      player.src = filename;
+      counterEl.textContent = `${idx + 1} / ${shuffled.length}`;
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === shuffled.length - 1;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (idx > 0) {
+        idx--;
+        loadVideo();
+      }
+    });
+    nextBtn.addEventListener("click", () => {
+      if (idx < shuffled.length - 1) {
+        idx++;
+        loadVideo();
+      }
+    });
+    toggleAnswerBtn.addEventListener("click", () => {
+      answerEl.style.display = answerEl.style.display === "none" ? "block" : "none";
+    });
+
+    // 페이지 로드 시 첫 영상
+    window.addEventListener("load", loadVideo);
   </script>
 </body>
 </html>
